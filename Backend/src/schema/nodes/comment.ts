@@ -1,13 +1,11 @@
 export const commentTypeDefs = /* GraphQL */ `
-	type Comment @node {
+	type Comentario @node {
 		id: ID! @id
 		contenido: String!
 		status: String
 
-		author: User @relationship(type: "COMENTA", direction: IN)
-
-		post: Post @relationship(type: "RESPUESTA_A", direction: OUT)
-
-		parent: Comment @relationship(type: "RESPUESTA_A", direction: OUT)
+		autor: Usuario @relationship(type: "COMENTA", direction: IN)
+		publicacion: Publicacion @relationship(type: "RESPUESTA_A", direction: OUT)
+		comentarioPadre: Comentario @relationship(type: "RESPUESTA_A", direction: OUT)
 	}
 `;

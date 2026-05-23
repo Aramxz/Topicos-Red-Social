@@ -1,6 +1,6 @@
 export const eventTypeDefs = /* GraphQL */ `
-	type Event @node {
-		id: ID!
+	type Evento @node {
+		id: ID! @id
 		titulo: String!
 		descripcion: String
 		fecha_inicio: DateTime
@@ -10,14 +10,13 @@ export const eventTypeDefs = /* GraphQL */ `
 		capacidad: Int
 		status: String
 
-		attendees: [User!]!
+		asistentes: [Usuario!]!
 			@relationship(type: "ASISTE", direction: IN, properties: "TypedRelation")
-
-		savedBy: [User!]! @relationship(type: "GUARDA", direction: IN, properties: "TypedRelation")
-
-		organizers: [User!]!
+		guardadoPor: [Usuario!]!
+			@relationship(type: "GUARDA", direction: IN, properties: "TypedRelation")
+		organizadores: [Usuario!]!
 			@relationship(type: "ORGANIZA", direction: IN, properties: "TypedRelation")
 
-		city: City @relationship(type: "OCURRE_EN", direction: OUT)
+		ciudad: Ciudad @relationship(type: "OCURRE_EN", direction: OUT)
 	}
 `;

@@ -1,12 +1,11 @@
 export const hashtagTypeDefs = /* GraphQL */ `
 	type Hashtag @node {
-		id: ID!
+		id: ID! @id
 		nombre: String!
 		descripcion: String
 		fecha_creacion: DateTime
 
-		posts: [Post!]! @relationship(type: "TIENE", direction: IN)
-
-		categories: [Category!]! @relationship(type: "PERTENECE_A", direction: OUT)
+		publicaciones: [Publicacion!]! @relationship(type: "TIENE", direction: IN)
+		categorias: [Categoria!]! @relationship(type: "PERTENECE_A", direction: OUT)
 	}
 `;

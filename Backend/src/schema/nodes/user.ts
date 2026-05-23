@@ -1,5 +1,5 @@
 export const userTypeDefs = /* GraphQL */ `
-	type User @node {
+	type Usuario @node {
 		id: ID! @id
 		username: String!
 		nombre: String!
@@ -12,32 +12,29 @@ export const userTypeDefs = /* GraphQL */ `
 		foto_perfil_url: String
 		status: String
 
-		follows: [User!]! @relationship(type: "SIGUE", direction: OUT, properties: "Timestamped")
+		sigue: [Usuario!]! @relationship(type: "SIGUE", direction: OUT, properties: "Timestamped")
+		bloqueados: [Usuario!]!
+			@relationship(type: "BLOQUEA", direction: OUT, properties: "Timestamped")
 
-		blocked: [User!]! @relationship(type: "BLOQUEA", direction: OUT, properties: "Timestamped")
-
-		posts: [Post!]! @relationship(type: "PUBLICA", direction: OUT, properties: "Timestamped")
-
-		comments: [Comment!]!
+		publicaciones: [Publicacion!]!
+			@relationship(type: "PUBLICA", direction: OUT, properties: "Timestamped")
+		comentarios: [Comentario!]!
 			@relationship(type: "COMENTA", direction: OUT, properties: "Timestamped")
 
-		reactionsPost: [Post!]!
+		reaccionesPublicaciones: [Publicacion!]!
 			@relationship(type: "REACCIONA", direction: OUT, properties: "TypedRelation")
-
-		reactionsComment: [Comment!]!
+		reaccionesComentarios: [Comentario!]!
 			@relationship(type: "REACCIONA", direction: OUT, properties: "Timestamped")
 
-		shares: [Post!]!
+		compartidos: [Publicacion!]!
 			@relationship(type: "COMPARTE", direction: OUT, properties: "TypedRelation")
-
-		savedPosts: [Post!]!
+		publicacionesGuardadas: [Publicacion!]!
 			@relationship(type: "GUARDA", direction: OUT, properties: "TypedRelation")
 
-		groups: [Group!]!
+		grupos: [Grupo!]!
 			@relationship(type: "PERTENECE_A", direction: OUT, properties: "Timestamped")
 
-		city: City @relationship(type: "VIVE_EN", direction: OUT)
-
-		birthCity: City @relationship(type: "NACIO_EN", direction: OUT)
+		ciudadActual: Ciudad @relationship(type: "VIVE_EN", direction: OUT)
+		ciudadNacimiento: Ciudad @relationship(type: "NACIO_EN", direction: OUT)
 	}
 `;

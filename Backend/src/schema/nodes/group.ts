@@ -1,14 +1,14 @@
 export const groupTypeDefs = /* GraphQL */ `
-	type Group @node {
-		id: ID!
+	type Grupo @node {
+		id: ID! @id
 		nombre: String!
 		descripcion: String
 		privacidad: String
 		fecha_creacion: DateTime
 		status: String
 
-		members: [User!]! @relationship(type: "PERTENECE_A", direction: IN)
-
-		admins: [User!]! @relationship(type: "ADMINISTRA", direction: IN)
+		miembros: [Usuario!]!
+			@relationship(type: "PERTENECE_A", direction: IN, properties: "Timestamped")
+		admins: [Usuario!]! @relationship(type: "ADMINISTRA", direction: IN)
 	}
 `;
