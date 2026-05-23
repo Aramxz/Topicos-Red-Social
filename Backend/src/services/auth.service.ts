@@ -161,3 +161,47 @@ export async function getCurrentUser(userId: string) {
 		await session.close();
 	}
 }
+
+export async function changePassword(userId: string, currentPassword: string, newPassword: string) {
+	const session = driver.session();
+
+	try {
+		const result = await session.run(
+			`
+			MATCH (u:Usuario {id: $userId})
+			RETURN u
+			LIMIT 1
+			`,
+			{ userId },
+		);
+
+		const userNode = result.records[0]?.get("u");
+
+		if (!userNode) {
+			throw new Error("USER_NOT_FOUND");
+		}
+
+		const user = userNode.properties;
+
+		const isValid = await bcrypt.compare(currentPassword, user.password_hash);
+
+		if (!isValid) {
+			throw new Error("INVALID_PASSWORD");
+		}
+
+		const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+		await session.run(
+			`
+			MATCH (u:Usuario {id: $userId})
+			SET u.password_hash = $newPasswordHash
+			RETURN u
+			`,
+			{ userId, newPasswordHash },
+		);
+
+		return true;
+	} finally {
+		await session.close();
+	}
+}

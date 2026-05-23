@@ -5,7 +5,6 @@ export const userTypeDefs = /* GraphQL */ `
 		nombre: String!
 		apellido: String!
 		correo: String!
-		password_hash: String!
 		bio: String
 		fecha_registro: DateTime
 		fecha_nacimiento: DateTime

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { loginUser, registerUser } from "../services/auth.service.js";
 import { requireAuth } from "../middlewares/auth.middleware.js";
-import { getCurrentUser } from "../services/auth.service.js";
+import { getCurrentUser, changePassword } from "../services/auth.service.js";
 
 export const authRouter = Router();
 
@@ -60,6 +60,42 @@ authRouter.get("/me", requireAuth, async (req, res) => {
 
 		res.status(500).json({
 			error: "Error obteniendo usuario",
+		});
+	}
+});
+
+authRouter.patch("/password", requireAuth, async (req, res) => {
+	try {
+		const { currentPassword, newPassword } = req.body;
+
+		if (!currentPassword || !newPassword) {
+			return res.status(400).json({
+				error: "currentPassword y newPassword son requeridos",
+			});
+		}
+
+		await changePassword(req.user!.sub, currentPassword, newPassword);
+
+		res.json({
+			message: "Contraseña actualizada correctamente",
+		});
+	} catch (error) {
+		if (error instanceof Error && error.message === "INVALID_PASSWORD") {
+			return res.status(401).json({
+				error: "Contraseña actual incorrecta",
+			});
+		}
+
+		if (error instanceof Error && error.message === "USER_NOT_FOUND") {
+			return res.status(404).json({
+				error: "Usuario no encontrado",
+			});
+		}
+
+		console.error(error);
+
+		res.status(500).json({
+			error: "Error cambiando contraseña",
 		});
 	}
 });
