@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { loginUser, registerUser } from "../services/auth.service.js";
+import { requireAuth } from "../middlewares/auth.middleware.js";
+import { getCurrentUser } from "../services/auth.service.js";
 
 export const authRouter = Router();
 
@@ -39,5 +41,25 @@ authRouter.post("/login", async (req, res) => {
 
 		console.error(error);
 		res.status(500).json({ error: "Error iniciando sesión" });
+	}
+});
+
+authRouter.get("/me", requireAuth, async (req, res) => {
+	try {
+		const user = await getCurrentUser(req.user!.sub);
+
+		res.json(user);
+	} catch (error) {
+		if (error instanceof Error && error.message === "USER_NOT_FOUND") {
+			return res.status(404).json({
+				error: "Usuario no encontrado",
+			});
+		}
+
+		console.error(error);
+
+		res.status(500).json({
+			error: "Error obteniendo usuario",
+		});
 	}
 });
