@@ -174,6 +174,10 @@ button {
   border-radius: 50%;
   font-size: 14px;
   font-weight: 800;
+  overflow: hidden;
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
 }
 
 .avatar.large {
@@ -281,9 +285,17 @@ textarea {
 .composer {
   display: flex;
   gap: 14px;
-  padding: 22px 28px;
-  border-bottom: 1px solid var(--line);
-  background: color-mix(in srgb, var(--surface) 58%, transparent);
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  margin: 20px;
+  box-shadow: var(--shadow);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.composer:focus-within {
+  border-color: var(--teal);
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--teal) 8%, transparent);
 }
 
 .composer-body {
@@ -342,26 +354,29 @@ textarea {
 
 .feed-list {
   display: grid;
-  gap: 14px;
-  padding: 18px;
+  gap: 20px;
+  padding: 20px;
 }
 
 .feed-card {
   display: grid;
   gap: 16px;
-  padding: 18px;
+  padding: 24px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 16px;
   background: var(--surface);
   box-shadow: var(--shadow);
-  transition:
-    border-color 0.2s ease,
-    transform 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .feed-card:hover {
-  border-color: color-mix(in srgb, var(--teal) 34%, var(--line));
-  transform: translateY(-2px);
+  border-color: var(--teal);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+:root[data-theme="dark"] .feed-card:hover {
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5), 0 0 15px rgba(16, 185, 129, 0.08);
 }
 
 .post-header {
@@ -1423,6 +1438,9 @@ textarea {
 .sidebar-brand h2 {
   margin: 0;
   font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink);
 }
 
 .brand-logo {
@@ -1432,72 +1450,173 @@ textarea {
   height: 36px;
   border-radius: 8px;
   color: #fff;
-  background: linear-gradient(135deg, var(--teal), var(--coral));
+  background: linear-gradient(135deg, var(--teal), var(--gold));
   font-weight: 850;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--teal) 50%, transparent);
+  transition: all 0.3s ease;
+}
+
+.brand-logo:hover {
+  transform: scale(1.08) rotate(4deg);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--gold) 75%, transparent);
 }
 
 .sidebar-nav,
-.suggestions-list,
-.sidebar-suggestions {
+.suggestions-list {
   display: grid;
   gap: 8px;
 }
 
-.nav-item.active {
-  color: var(--ink);
+.nav-item {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+}
+
+.nav-item.active,
+.nav-item.is-active {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, var(--teal) 30%, color-mix(in srgb, var(--teal) 80%, var(--gold))) !important;
+  transform: translateX(4px);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--teal) 25%, transparent);
+  font-weight: 750;
+}
+
+.nav-item.active::after,
+.nav-item.is-active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 15%;
+  width: 4px;
+  height: 70%;
+  background: var(--gold);
+  border-radius: 0 4px 4px 0;
+}
+
+.nav-item:hover:not(.active):not(.is-active) {
+  transform: translateX(3px);
+  color: var(--teal);
   background: var(--surface-soft);
-  transform: translateX(2px);
+}
+
+.sidebar-suggestions {
+  margin-top: 24px;
+  padding: 16px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--surface-soft) 40%, transparent);
+  border: 1px dashed var(--line);
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 12px;
+}
+
+.sidebar-suggestions::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, var(--teal), var(--gold));
+  opacity: 0.8;
 }
 
 .sidebar-suggestions h3 {
-  margin: 0 0 4px;
+  margin: 0;
   color: var(--muted);
   font-size: 13px;
   text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 800;
 }
 
 .suggestion-item {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-  min-width: 0;
-  padding: 10px;
+  gap: 12px;
+  padding: 12px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 10px;
   background: var(--surface);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  min-width: 0;
+}
+
+.suggestion-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
 }
 
 .suggestion-info {
   min-width: 0;
+  flex: 1;
 }
 
-.suggestion-info strong,
-.suggestion-info span {
+.suggestion-info strong {
   display: block;
+  font-size: 14px;
+  font-weight: 750;
+  color: var(--ink);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .suggestion-info span {
-  color: var(--muted);
+  display: block;
   font-size: 12px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 1px;
+}
+
+.suggestion-item:hover {
+  transform: translateY(-2px);
+  border-color: var(--teal);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--teal) 12%, transparent);
+}
+
+:root[data-theme="dark"] .suggestion-item:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 10px rgba(52, 211, 153, 0.1);
 }
 
 .icon-btn {
   display: inline-grid;
   place-items: center;
   flex: 0 0 auto;
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   border: 0;
   border-radius: 8px;
-  color: var(--ink);
+  color: var(--muted);
   background: var(--surface-soft);
   cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.icon-btn:hover {
+  color: var(--ink);
+  background: var(--surface-strong);
+  transform: scale(1.08);
 }
 
 .icon-btn.following {
-  color: #fff;
-  background: var(--teal);
+  color: #ffffff !important;
+  background: linear-gradient(135deg, var(--teal), color-mix(in srgb, var(--teal) 85%, #000)) !important;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--teal) 30%, transparent);
+}
+
+.icon-btn.following:hover {
+  transform: scale(1.08);
+  opacity: 0.9;
 }
 
 .app-main {
@@ -1595,6 +1714,8 @@ textarea {
   width: 32px;
   height: 32px;
   font-size: 12px;
+  flex: 0 0 32px;
+  overflow: hidden;
 }
 
 .avatar img {
@@ -1683,4 +1804,175 @@ textarea {
   .metric-label {
     font-size: 11px;
   }
+}
+
+/* ==========================================================================
+   PREMIUM ACCENTS & UPGRADES (GREEN & GOLD)
+   ========================================================================== */
+
+/* Custom premium scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--page);
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--teal) 30%, var(--line));
+  border-radius: 99px;
+  border: 2px solid var(--page);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold);
+}
+
+/* Premium Card Hovers */
+.feed-card,
+.entity-card {
+  transition: border-color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
+              transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
+              box-shadow 0.3s ease;
+}
+.feed-card:hover,
+.entity-card:hover {
+  border-color: var(--teal);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(4, 120, 87, 0.08);
+}
+:root[data-theme="dark"] .feed-card:hover,
+:root[data-theme="dark"] .entity-card:hover {
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5), 0 0 15px rgba(52, 211, 153, 0.06);
+}
+
+/* Sidebar background subtle gold/green aura */
+.app-sidebar {
+  position: relative;
+}
+.app-sidebar::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--teal) 8%, transparent) 0%, transparent 70%);
+  filter: blur(25px);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Premium Intro Splash Screen */
+.premium-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, #0a110e 0%, #030605 100%);
+  color: #ffffff;
+  overflow: hidden;
+}
+
+.splash-glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(52, 211, 153, 0.22) 0%, rgba(232, 189, 93, 0.05) 50%, transparent 75%);
+  filter: blur(45px);
+  pointer-events: none;
+}
+
+.splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 2;
+}
+
+.potro-svg-container {
+  width: 220px;
+  height: 220px;
+  margin-bottom: 24px;
+  filter: drop-shadow(0 0 15px rgba(52, 211, 153, 0.35)) drop-shadow(0 0 30px rgba(232, 189, 93, 0.15));
+}
+
+.potro-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.graph-link {
+  stroke: url(#gold-teal-grad);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.graph-node {
+  fill: #ffffff;
+  stroke: var(--teal);
+  stroke-width: 1.5;
+}
+
+.graph-node.key-node {
+  fill: var(--gold);
+  stroke: #ffffff;
+  stroke-width: 2;
+}
+
+.splash-title {
+  font-size: 40px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+}
+
+.splash-subtitle {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--teal);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+/* Card Banner Styling for Groups and Events */
+.entity-card.has-banner {
+  padding: 0 !important;
+  overflow: hidden;
+  display: flex !important;
+  flex-direction: column;
+}
+
+.entity-card-banner {
+  width: 100%;
+  height: 120px;
+  overflow: hidden;
+  position: relative;
+  border-bottom: 1px solid var(--line);
+}
+
+.entity-card-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.entity-card.has-banner:hover .entity-card-banner img {
+  transform: scale(1.08);
+}
+
+.entity-card.has-banner .card-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
 }

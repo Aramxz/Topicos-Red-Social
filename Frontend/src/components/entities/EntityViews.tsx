@@ -24,6 +24,40 @@ import { fetchPublicPosts } from "../../services/feedService";
 import { SavedList } from "../ui/SavedList";
 import { ViewHero } from "../ui/ViewHero";
 
+function getGroupBanner(name: string): string {
+  const n = name.toLowerCase();
+  if (n.includes("tech") || n.includes("program") || n.includes("code") || n.includes("datos") || n.includes("grafo") || n.includes("web") || n.includes("soft")) {
+    return "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&auto=format&fit=crop&q=60";
+  }
+  if (n.includes("game") || n.includes("juego") || n.includes("play") || n.includes("geek") || n.includes("console") || n.includes("retro")) {
+    return "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=500&auto=format&fit=crop&q=60";
+  }
+  if (n.includes("musica") || n.includes("band") || n.includes("rock") || n.includes("arte") || n.includes("cine") || n.includes("sound")) {
+    return "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&auto=format&fit=crop&q=60";
+  }
+  if (n.includes("deporte") || n.includes("gym") || n.includes("fit") || n.includes("run") || n.includes("futbol") || n.includes("salud")) {
+    return "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=500&auto=format&fit=crop&q=60";
+  }
+  if (n.includes("libro") || n.includes("estud") || n.includes("tarea") || n.includes("univers") || n.includes("ciencia") || n.includes("lectura")) {
+    return "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=500&auto=format&fit=crop&q=60";
+  }
+  return "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500&auto=format&fit=crop&q=60";
+}
+
+function getEventBanner(title: string): string {
+  const t = title.toLowerCase();
+  if (t.includes("confer") || t.includes("tech") || t.includes("tall") || t.includes("hack") || t.includes("datos") || t.includes("charla")) {
+    return "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=500&auto=format&fit=crop&q=60";
+  }
+  if (t.includes("fiest") || t.includes("party") || t.includes("reun") || t.includes("social") || t.includes("conviv") || t.includes("almuer")) {
+    return "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=500&auto=format&fit=crop&q=60";
+  }
+  if (t.includes("concert") || t.includes("musical") || t.includes("festiv") || t.includes("show") || t.includes("banda")) {
+    return "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=500&auto=format&fit=crop&q=60";
+  }
+  return "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=500&auto=format&fit=crop&q=60";
+}
+
 export function Metric({ label, value }: { label: string; value: number | string }) {
   return (
     <div className="metric-box">
@@ -273,26 +307,31 @@ export function GroupsView({
 
       <div className="entity-grid">
         {visibleGroups.map((group) => (
-          <article key={group.id} className="entity-card">
-            <div className="card-header">
-              <h3>{group.nombre}</h3>
-              <span className="badge">{group.privacidad}</span>
+          <article key={group.id} className="entity-card has-banner">
+            <div className="entity-card-banner">
+              <img src={getGroupBanner(group.nombre)} alt={group.nombre} />
             </div>
-            <p>{group.descripcion}</p>
-            <div className="card-footer">
-              <span>{group.miembrosCount ?? 0} miembros</span>
-            </div>
-            {activeTab === "explorar" && (
-              <div className="entity-actions">
-                <button
-                  type="button"
-                  disabled={!token || myGroupIds.has(group.id)}
-                  onClick={() => void onJoinGroup(group.id)}
-                >
-                  {myGroupIds.has(group.id) ? "Ya perteneces" : "Unirme"}
-                </button>
+            <div className="card-content">
+              <div className="card-header">
+                <h3>{group.nombre}</h3>
+                <span className="badge">{group.privacidad}</span>
               </div>
-            )}
+              <p>{group.descripcion}</p>
+              <div className="card-footer">
+                <span>{group.miembrosCount ?? 0} miembros</span>
+              </div>
+              {activeTab === "explorar" && (
+                <div className="entity-actions">
+                  <button
+                    type="button"
+                    disabled={!token || myGroupIds.has(group.id)}
+                    onClick={() => void onJoinGroup(group.id)}
+                  >
+                    {myGroupIds.has(group.id) ? "Ya perteneces" : "Unirme"}
+                  </button>
+                </div>
+              )}
+            </div>
           </article>
         ))}
         {!visibleGroups.length && <p className="status-message">No se encontraron grupos</p>}
@@ -400,32 +439,38 @@ export function EventsView({
 
       <div className="entity-grid">
         {visibleEvents.map((event) => (
-          <article key={event.id} className="entity-card">
-            <div className="card-header">
-              <h3>{event.titulo}</h3>
-              <span className="badge">{event.modalidad}</span>
+          <article key={event.id} className="entity-card has-banner">
+            <div className="entity-card-banner">
+              <img src={getEventBanner(event.titulo)} alt={event.titulo} />
             </div>
-            <p>{event.descripcion}</p>
-            <div className="card-footer">
-              <span><MapPin size={14} /> {event.ciudad?.nombre ?? "Online"}</span>
-              <span>{event.capacidad ?? "Sin limite"} lugares</span>
-            </div>
-            <div className="entity-actions">
-              <button
-                type="button"
-                disabled={!token || attendingEventIds.has(event.id)}
-                onClick={() => void onAttendEvent(event.id)}
-              >
-                {attendingEventIds.has(event.id) ? "Asistiras" : "Asistir"}
-              </button>
-              <button
-                type="button"
-                className="secondary-action"
-                disabled={!token || savedEventIds.has(event.id)}
-                onClick={() => void onSaveEvent(event.id)}
-              >
-                {savedEventIds.has(event.id) ? "Guardado" : "Guardar"}
-              </button>
+            <div className="card-content">
+              <div className="card-header">
+                <h3>{event.titulo}</h3>
+                <span className="badge">{event.modalidad}</span>
+              </div>
+              <p>{event.descripcion}</p>
+              <div className="card-footer">
+                <span><MapPin size={14} /> {event.ciudad?.nombre ?? "Online"}</span>
+                <span>{event.capacidad ?? "Sin limite"} lugares</span>
+              </div>
+              {/* entity-actions inside card-content */}
+              <div className="entity-actions">
+                <button
+                  type="button"
+                  disabled={!token || attendingEventIds.has(event.id)}
+                  onClick={() => void onAttendEvent(event.id)}
+                >
+                  {attendingEventIds.has(event.id) ? "Asistiras" : "Asistir"}
+                </button>
+                <button
+                  type="button"
+                  className="secondary-action"
+                  disabled={!token || savedEventIds.has(event.id)}
+                  onClick={() => void onSaveEvent(event.id)}
+                >
+                  {savedEventIds.has(event.id) ? "Guardado" : "Guardar"}
+                </button>
+              </div>
             </div>
           </article>
         ))}

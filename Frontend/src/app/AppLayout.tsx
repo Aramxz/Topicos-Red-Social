@@ -1,4 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { PremiumSplash } from "../components/ui/PremiumSplash";
 import { AuthPanel } from "../components/auth/AuthPanel";
 import { Composer } from "../components/feed/Composer";
 import { FeedList } from "../components/feed/FeedList";
@@ -26,6 +29,18 @@ export default function AppLayout({ activeView, setActiveView }: { activeView: s
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [publicProfileId, setPublicProfileId] = useState<string | null>(null);
+
+  const contentAreaRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    if (contentAreaRef.current) {
+      gsap.fromTo(
+        contentAreaRef.current,
+        { opacity: 0, y: 15 },
+        { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }
+      );
+    }
+  }, [activeView, publicProfileId]);
 
   const { feedLoading, feedMessage, posts, publishPost, publishing, reactingPostId, refreshFeed, shareExistingPost, toggleReaction, toggleSaved } = useFeed(sessionUser?.id, token);
   const { followingId, followSuggestion, loadingSuggestions, suggestions } = useUserSuggestions(token, refreshFeed);
@@ -89,6 +104,7 @@ export default function AppLayout({ activeView, setActiveView }: { activeView: s
 
   return (
     <div className={`app-container ${theme}`}>
+      <PremiumSplash />
       <Sidebar
         activeView={activeView as ViewId}
         onNavigate={(view) => {
@@ -119,7 +135,7 @@ export default function AppLayout({ activeView, setActiveView }: { activeView: s
           theme={theme}
           toggleTheme={toggleTheme}
         />
-        <div className="content-area">
+        <div className="content-area" ref={contentAreaRef}>
           {activeView === "inicio" && (
             <div className="feed-container">
               <Composer
