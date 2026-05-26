@@ -7,7 +7,8 @@ import { Composer } from "../components/feed/Composer";
 import { FeedList } from "../components/feed/FeedList";
 import { Sidebar } from "../components/layout/Sidebar";
 import { Topbar } from "../components/layout/Topbar";
-import { EventsView, ExploreView, GroupsView, ProfileView, PublicProfileView } from "../components/entities/EntityViews";
+import { EventsView, ExploreView, GroupsView, ProfileView } from "../components/entities/EntityViews";
+import { ProfileDrawer } from "../components/ui/ProfileDrawer";
 import type { ViewId } from "../config/navigation";
 import { useAuth } from "../hooks/useAuth";
 import { useCatalogs } from "../hooks/useCatalogs";
@@ -40,7 +41,7 @@ export default function AppLayout({ activeView, setActiveView }: { activeView: s
         { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }
       );
     }
-  }, [activeView, publicProfileId]);
+  }, [activeView]);
 
   const { feedLoading, feedMessage, posts, publishPost, publishing, reactingPostId, refreshFeed, shareExistingPost, toggleReaction, toggleSaved } = useFeed(sessionUser?.id, token);
   const { followingId, followSuggestion, loadingSuggestions, suggestions } = useUserSuggestions(token, refreshFeed);
@@ -67,7 +68,7 @@ export default function AppLayout({ activeView, setActiveView }: { activeView: s
     refreshEvents,
   );
 
-  const { profile } = usePublicProfile(publicProfileId || undefined);
+  const { profile, profileLoading } = usePublicProfile(publicProfileId || undefined);
 
   useEffect(() => {
     if (!isLoggedIn) return;
@@ -161,7 +162,7 @@ export default function AppLayout({ activeView, setActiveView }: { activeView: s
           )}
 
           {activeView === "explorar" && (
-            <ExploreView cities={cities} feedPosts={posts} hashtags={hashtags} snapshot={snapshot} />
+            <ExploreView cities={cities} feedPosts={posts} hashtags={hashtags} onOpenUser={setPublicProfileId} snapshot={snapshot} />
           )}
 
           {activeView === "grupos" && (
@@ -203,11 +204,19 @@ export default function AppLayout({ activeView, setActiveView }: { activeView: s
             />
           )}
 
-          {publicProfileId && (
-            <PublicProfileView onFollow={handleFollowUser} profileId={publicProfileId} social={profile} token={token} />
-          )}
         </div>
       </main>
+
+      {/* Sliding profile drawer — rendered outside content-area so it overlays everything */}
+      <ProfileDrawer
+        isOpen={!!publicProfileId}
+        isLoading={profileLoading}
+        onClose={() => setPublicProfileId(null)}
+        onFollow={handleFollowUser}
+        profileId={publicProfileId}
+        social={profile}
+        token={token}
+      />
 
       {showAuthModal && (
         <div className="modal-backdrop" role="presentation" onClick={() => setShowAuthModal(false)}>

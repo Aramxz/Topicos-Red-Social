@@ -21,6 +21,7 @@ import type {
   UserSocialSummary,
 } from "../../types/social";
 import { fetchPublicPosts } from "../../services/feedService";
+import { Avatar } from "../ui/Avatar";
 import { SavedList } from "../ui/SavedList";
 import { ViewHero } from "../ui/ViewHero";
 
@@ -96,11 +97,13 @@ export function ExploreView({
   cities,
   feedPosts,
   hashtags,
+  onOpenUser,
   snapshot,
 }: {
   cities: CatalogCity[];
   feedPosts: FeedPost[];
   hashtags: CatalogHashtag[];
+  onOpenUser?: (userId: string) => void;
   snapshot: GraphSnapshot;
 }) {
   const [cityFilter, setCityFilter] = useState("");
@@ -146,9 +149,10 @@ export function ExploreView({
     if (!allPosts.has(post.id)) allPosts.set(post.id, post);
   });
 
+  const normalizedSearch = normalizeText(searchQuery);
+
   const filteredPosts = [...allPosts.values()].filter((post) => {
     const postTags = (post.hashtags ?? []).map((tag) => (typeof tag === "string" ? tag : tag.nombre));
-    const normalizedSearch = normalizeText(searchQuery);
 
     if (cityFilter && post.ciudad?.nombre !== cityFilter) return false;
     if (hashtagFilter && !postTags.some((tag) => normalizeText(tag) === normalizeText(hashtagFilter))) return false;
@@ -164,9 +168,19 @@ export function ExploreView({
     return true;
   });
 
+  // Users matching the search query from the graph snapshot
+  const matchedUsers = normalizedSearch
+    ? snapshot.usuarios.filter(
+        (u) =>
+          normalizeText(u.username ?? "").includes(normalizedSearch) ||
+          normalizeText(u.nombre ?? "").includes(normalizedSearch) ||
+          normalizeText(u.apellido ?? "").includes(normalizedSearch),
+      )
+    : [];
+
   return (
     <section className="entity-view">
-      <ViewHero eyebrow="Descubrimiento" title="Explorar" icon={<Compass size={30} />} />
+      <ViewHero eyebrow="Descubrimiento" title="Explorar" icon={<Compass size={30} />} variant="explorar" />
 
       <div className="discovery-filters">
         <label className="search-input">
@@ -209,18 +223,73 @@ export function ExploreView({
 
       <div className="discovery-grid">
         <div className="feed-list">
+          {matchedUsers.length > 0 && (
+            <>
+              <h3>Usuarios encontrados</h3>
+              <div className="explore-users-list">
+                {matchedUsers.map((user) => (
+                  <button
+                    key={user.id}
+                    type="button"
+                    className="explore-user-card"
+                    onClick={() => onOpenUser?.(user.id)}
+                  >
+                    <div className="explore-user-avatar">
+                      {user.foto_perfil_url ? (
+                        <img src={user.foto_perfil_url} alt={user.username} />
+                      ) : (
+                        <UserRound size={22} />
+                      )}
+                    </div>
+                    <div className="explore-user-info">
+                      <strong>@{user.username}</strong>
+                      <span>{[user.nombre, user.apellido].filter(Boolean).join(" ")}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+
           <h3>Publicaciones recientes</h3>
           {filteredPosts.map((post) => (
-            <article key={post.id} className="entity-card">
-              <strong>@{post.autor?.username}</strong>
-              <p>{post.contenido}</p>
-              <div className="post-tags">
-                {post.ciudad?.nombre && <span>{post.ciudad.nombre}</span>}
-                {(post.hashtags ?? []).slice(0, 4).map((tag) => {
-                  const tagName = typeof tag === "string" ? tag : tag.nombre;
-                  return <span key={`${post.id}-${tagName}`}>#{tagName}</span>;
-                })}
+            <article key={post.id} className="explore-post-card">
+              <div className="explore-post-author">
+                <div
+                  className={post.autor?.id && onOpenUser ? "explore-post-avatar clickable" : "explore-post-avatar"}
+                  role={post.autor?.id && onOpenUser ? "button" : undefined}
+                  tabIndex={post.autor?.id && onOpenUser ? 0 : undefined}
+                  onClick={() => post.autor?.id && onOpenUser?.(post.autor.id)}
+                  onKeyDown={(e) => e.key === "Enter" && post.autor?.id && onOpenUser?.(post.autor.id)}
+                >
+                  <Avatar user={post.autor} size="sm" />
+                </div>
+                <div className="explore-post-author-info">
+                  {post.autor?.id && onOpenUser ? (
+                    <button
+                      type="button"
+                      className="post-author-link"
+                      onClick={() => onOpenUser(post.autor!.id!)}
+                    >
+                      @{post.autor.username}
+                    </button>
+                  ) : (
+                    <strong className="post-author-name">@{post.autor?.username}</strong>
+                  )}
+                  {post.ciudad?.nombre && (
+                    <span className="explore-post-city">{post.ciudad.nombre}</span>
+                  )}
+                </div>
               </div>
+              <p className="explore-post-content">{post.contenido}</p>
+              {(post.hashtags ?? []).length > 0 && (
+                <div className="post-tags">
+                  {(post.hashtags ?? []).slice(0, 4).map((tag) => {
+                    const tagName = typeof tag === "string" ? tag : tag.nombre;
+                    return <span key={`${post.id}-${tagName}`}>#{tagName}</span>;
+                  })}
+                </div>
+              )}
             </article>
           ))}
           {!filteredPosts.length && <p className="status-message">No se encontraron resultados</p>}
@@ -285,7 +354,7 @@ export function GroupsView({
 
   return (
     <section className="entity-view">
-      <ViewHero eyebrow="Comunidades" title="Grupos" icon={<UsersRound size={30} />} />
+      <ViewHero eyebrow="Comunidades" title="Grupos" icon={<UsersRound size={30} />} variant="grupos" />
 
       <form className="entity-form horizontal" onSubmit={handleSubmit}>
         <input disabled={!token} placeholder="Nombre del grupo" value={groupName} onChange={(e) => setGroupName(e.target.value)} />
@@ -391,7 +460,7 @@ export function EventsView({
 
   return (
     <section className="entity-view">
-      <ViewHero eyebrow="Agenda" title={activeTab === 'explorar' ? 'Descubrir eventos' : 'Eventos para ti'} icon={<CalendarDays size={30} />} />
+      <ViewHero eyebrow="Agenda" title={activeTab === 'explorar' ? 'Descubrir eventos' : 'Eventos para ti'} icon={<CalendarDays size={30} />} variant="eventos" />
 
       <div className="metrics-row">
         <Metric label="Iras" value={social?.eventosAsiste.length ?? 0} />
@@ -583,7 +652,7 @@ export function ProfileView({
 
   return (
     <section className="entity-view">
-      <ViewHero eyebrow="Tu cuenta" title="Perfil y actividad" icon={<UserRound size={30} />} />
+      <ViewHero eyebrow="Tu cuenta" title="Perfil y actividad" icon={<UserRound size={30} />} variant="perfil" />
 
       {!token && <div className="entity-empty">Inicia sesion para ver tu perfil, agenda y guardados.</div>}
       {socialLoading && <p className="status-message">Cargando tu perfil...</p>}
@@ -713,7 +782,7 @@ export function PublicProfileView({
 
   return (
     <section className="entity-view">
-      <ViewHero eyebrow="Perfil publico" title={`@${profile.username ?? "usuario"}`} icon={<UserRound size={30} />} />
+      <ViewHero eyebrow="Perfil publico" title={`@${profile.username ?? "usuario"}`} icon={<UserRound size={30} />} variant="perfil_publico" />
 
       <div className="profile-overview">
         <article className="entity-card profile-summary">

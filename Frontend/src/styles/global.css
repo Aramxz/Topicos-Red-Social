@@ -7,13 +7,13 @@
   --surface-strong: #dbdee1; /* Discord Light strong hover */
   --ink: #060607; /* Discord Light primary text */
   --muted: #5c64f4; /* Muted accent / Discord blurple hue */
-  --line: #e3e5e8;
+  --line: rgba(0, 0, 0, 0.05);
   --teal: #10b981; /* Verde esmeralda premium vibrante estilo GSAP */
   --coral: #f26a4f;
   --gold: #d97706; /* Oro noble estilo GSAP */
   --tag-bg: #ecfdf5; /* Verde menta muy suave */
   --tag-ink: #047857; /* Verde bosque profundo */
-  --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   --glass: rgba(255, 255, 255, 0.85);
   color: var(--ink);
   background: var(--page);
@@ -32,13 +32,13 @@
   --surface-strong: #35373c; /* Discord Dark hover background */
   --ink: #f2f3f5; /* Discord Dark primary text */
   --muted: #949ba4; /* Discord Dark muted text */
-  --line: #1f2023; /* Discord Dark line separator */
+  --line: rgba(255, 255, 255, 0.06); /* Discord Dark line separator */
   --teal: #10b981; /* Verde esmeralda GSAP */
   --coral: #ff7a5f;
   --gold: #fbbf24; /* Oro noble brillante GSAP */
   --tag-bg: #102d24; /* Menta profundo */
   --tag-ink: #34d399; /* Menta eléctrica */
-  --shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
   --glass: rgba(43, 45, 49, 0.85);
 }
 

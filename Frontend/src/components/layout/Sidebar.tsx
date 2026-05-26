@@ -1,5 +1,6 @@
 import { NAVIGATION_ITEMS, type ViewId } from "../../config/navigation";
 import { UserSuggestionItem } from "../entities/UserSuggestionItem";
+import { PotroLogo } from "../ui/PotroLogo";
 import type { SessionUser, UserSuggestion } from "../../types/social";
 
 type SidebarProps = {
@@ -26,7 +27,7 @@ export function Sidebar({
   return (
     <aside className="app-sidebar">
       <div className="sidebar-brand">
-        <div className="brand-logo">J</div>
+        <PotroLogo className="brand-logo" />
         <h2>Jerobook</h2>
       </div>
 
